@@ -47,7 +47,7 @@ customer_name String Customer name (e.g., "RedBox Logistics")
 customer_slug String Slug/kebab-case version of customer name
  
  
-Response
+Response Result
  
 {
   "tracking_number": "MYID3E7912",
