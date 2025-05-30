@@ -1,12 +1,16 @@
 package com.test.unique.tracking.numbers.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.test.unique.tracking.numbers.model.TrackingRequest;
 import com.test.unique.tracking.numbers.model.TrackingResponse;
 import com.test.unique.tracking.numbers.service.TrackingNumberService;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
-import java.util.UUID;
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/next-tracking-number")
@@ -18,17 +22,17 @@ public class TrackingNumberController {
         this.service = service;
     }
 
-    @GetMapping
-    public TrackingResponse getTrackingNumber(
-            @RequestParam String origin_country_id,
-            @RequestParam String destination_country_id,
-            @RequestParam double weight,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime created_at,
-            @RequestParam UUID customer_id,
-            @RequestParam String customer_name,
-            @RequestParam String customer_slug) {
+@GetMapping
+public TrackingResponse getTrackingNumber(@Valid @ModelAttribute TrackingRequest request) {
+    return service.generateTrackingNumber(
+            request.getOrigin_country_id(),
+            request.getDestination_country_id(),
+            request.getWeight(),
+            request.getCreated_at(),
+            request.getCustomer_id(),
+            request.getCustomer_name(),
+            request.getCustomer_slug()
+    );
+}
 
-        return service.generateTrackingNumber(origin_country_id, destination_country_id, weight,
-                created_at, customer_id, customer_name, customer_slug);
-    }
 }

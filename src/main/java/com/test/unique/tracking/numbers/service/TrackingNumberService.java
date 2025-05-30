@@ -21,12 +21,18 @@ public class TrackingNumberService {
     public TrackingResponse generateTrackingNumber(String origin, String destination, double weight,
                                                    ZonedDateTime createdAt, UUID customerId,
                                                    String customerName, String customerSlug) {
-        TrackingCounter counter = repository.save(new TrackingCounter());
-        Long id = counter.getId();
-
-        String base = (origin + destination + customerSlug + id).toUpperCase().replaceAll("[^A-Z0-9]", "");
-        String trackingNumber = base.substring(0, Math.min(16, base.length()));
-
-        return new TrackingResponse(trackingNumber, ZonedDateTime.now());
+                                                    if (origin == null || destination == null) {
+                                                        throw new IllegalArgumentException("Origin and destination must not be null");
+                                                    }
+                                                
+                                                    try {
+                                                        TrackingCounter counter = repository.save(new TrackingCounter());
+                                                        Long id = counter.getId();
+                                                        String base = (origin + destination + customerSlug + id).toUpperCase().replaceAll("[^A-Z0-9]", "");
+                                                        String trackingNumber = base.substring(0, Math.min(16, base.length()));
+                                                        return new TrackingResponse(trackingNumber, ZonedDateTime.now());
+                                                    } catch (Exception e) {
+                                                        throw new RuntimeException("Error generating tracking number", e);
+                                                    }
     }
 }
